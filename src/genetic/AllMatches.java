@@ -4,29 +4,28 @@ public class AllMatches {
 
   private static Match[] matches;
 
-  public static void initialize(int numberOfTeams) {
-    matches = new Match[numberOfTeams * (numberOfTeams - 1) * SportsEnum.values().length];
-    for (int i = 0; i < matches.length; i++) {
-      matches[i] = new Match();
-      matches[i].setId(i);
-    }
+  private static Team[] teams;
 
-    int counter = 0;
+  public static void initialize() {
+
+    teams = new Team[Constants.NUMBER_OF_TEAMS * SportsEnum.values().length];
 
     SportsEnum[] sports = SportsEnum.values();
+    int counter = 0;
 
     for (SportsEnum sport : sports) {
-      for (int i = 0; i < numberOfTeams; i++) {
-        for (int j = 0; j < numberOfTeams; j++) {
-          if (i == j) {
-            continue;
-          }
-          matches[counter].setTeam1(i);
-          matches[counter].setTeam2(j);
-          matches[counter].setSport(sport);
-          counter++;
-        }
+      for (int i = 0; i < Constants.NUMBER_OF_TEAMS; i++) {
+        teams[counter] = new Team(counter, sport.name() + i, sport);
+        counter++;
       }
+    }
+
+    matches = new Match[(Constants.NUMBER_OF_TEAMS / 2) * SportsEnum.values().length];
+
+    counter = 0;
+    for (int i = 0; i < matches.length; i++) {
+      matches[i] = new Match(i, teams[counter], teams[counter + 1]);
+      counter += 2;
     }
   }
 

@@ -4,11 +4,6 @@ import java.util.Arrays;
 
 public class Algorithm {
 
-  /* GA parameters */
-  private static final double mutationRate = 0.03;
-  private static final int tournamentSize = 10;
-  private static final boolean elitism = true;
-
   /* Public methods */
 
   // Evolve a population
@@ -17,7 +12,7 @@ public class Algorithm {
     int elitismOffset = 0;
 
     // Keep our best individual
-    if (elitism) {
+    if (Constants.ELITISM) {
       newPopulation.saveIndividual(0, pop.getFittest());
       newPopulation.saveIndividual(1, pop.getSecondFittest());
       elitismOffset = 2;
@@ -71,7 +66,7 @@ public class Algorithm {
   private static void mutate(Individual indiv) {
     // Loop through genes
     for (int i = 0; i < indiv.size(); i++) {
-      if (Math.random() <= mutationRate) {
+      if (Math.random() <= Constants.MUTATION_RATE) {
         // Create random gene
         Match gene = AllMatches.getMatch((int) (Math.random() * AllMatches.totalMatches()));
         indiv.setGene(i, gene);
@@ -82,9 +77,9 @@ public class Algorithm {
   // Select individuals for crossover
   private static Individual tournamentSelection(Population pop) {
     // Create a tournament population
-    Population tournament = new Population(tournamentSize, false);
+    Population tournament = new Population(Constants.TOURNAMENT_SIZE, false);
     // For each place in the tournament get a random individual
-    for (int i = 0; i < tournamentSize; i++) {
+    for (int i = 0; i < Constants.TOURNAMENT_SIZE; i++) {
       int randomId = (int) (Math.random() * pop.size());
       tournament.saveIndividual(i, pop.getIndividual(randomId));
     }

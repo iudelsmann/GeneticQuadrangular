@@ -1,27 +1,34 @@
 package genetic;
 
-public class Individual implements Comparable<Individual> {
+import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
-  private static int size;
+public class Individual implements Comparable<Individual> {
 
   private Match[] genes;
 
   private int fitness = 0;
 
   public Individual() {
-    genes = new Match[size];
+    genes = new Match[AllMatches.totalMatches()];
   }
 
   public Individual(int size) {
-    Individual.size = size;
     this.generateIndividual(size);
   }
 
-  // Create a random individual
+  // Cria um indivíduo VÁLIDO aleatoriamente
   public void generateIndividual(int size) {
+    int[] match = new int[size];
+    for (int i = 0; i < match.length; i++) {
+      match[i] = i;
+    }
+
+    this.shuffleArray(match);
+
     genes = new Match[size];
     for (int i = 0; i < size(); i++) {
-      Match gene = AllMatches.getMatch((int) (Math.random() * AllMatches.totalMatches()));
+      Match gene = AllMatches.getMatch(match[i]);
       genes[i] = gene;
     }
   }
@@ -49,11 +56,12 @@ public class Individual implements Comparable<Individual> {
 
   @Override
   public String toString() {
-    String geneString = "";
+    StringBuilder geneString = new StringBuilder();
     for (int i = 0; i < size(); i++) {
-      geneString += getGene(i);
+      geneString.append(Constants.times[i] + "h: ");
+      geneString.append(getGene(i));
     }
-    return geneString;
+    return geneString.toString();
   }
 
   @Override
@@ -68,5 +76,21 @@ public class Individual implements Comparable<Individual> {
     } else {
       return 0;
     }
+  }
+
+  // Implementing Fisher–Yates shuffle
+  private void shuffleArray(int[] ar) {
+    Random rnd = ThreadLocalRandom.current();
+    for (int i = ar.length - 1; i > 0; i--) {
+      int index = rnd.nextInt(i + 1);
+      // Simple swap
+      int a = ar[index];
+      ar[index] = ar[i];
+      ar[i] = a;
+    }
+  }
+
+  public Match[] getGenes() {
+    return genes;
   }
 }

@@ -2,8 +2,7 @@ package genetic;
 
 public class FitnessCalc {
 
-  static Match[] solution = new Match[GA.numberOfTeams * (GA.numberOfTeams - 1)
-      * SportsEnum.values().length];
+  static Match[] solution = new Match[(Constants.NUMBER_OF_TEAMS / 2) * SportsEnum.values().length];
 
   /* Public methods */
   // Set a candidate solution as a byte array
