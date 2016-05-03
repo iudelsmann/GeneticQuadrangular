@@ -33,6 +33,10 @@ public class AllMatches {
     return matches[index];
   }
 
+  public static Team getTeam(int index) {
+    return teams[index];
+  }
+
   public static int totalMatches() {
     return matches.length;
   }

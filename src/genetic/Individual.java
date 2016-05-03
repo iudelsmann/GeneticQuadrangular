@@ -1,7 +1,7 @@
 package genetic;
 
-import java.util.Random;
-import java.util.concurrent.ThreadLocalRandom;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Individual implements Comparable<Individual> {
 
@@ -24,7 +24,7 @@ public class Individual implements Comparable<Individual> {
       match[i] = i;
     }
 
-    this.shuffleArray(match);
+    Helper.shuffleArray(match);
 
     genes = new Match[size];
     for (int i = 0; i < size(); i++) {
@@ -48,8 +48,23 @@ public class Individual implements Comparable<Individual> {
   }
 
   public int getFitness() {
-    if (fitness == 0) {
-      fitness = FitnessCalc.getFitness(this);
+    fitness = 0;
+    List<Match> visited = new ArrayList<Match>();
+    for (int i = 0; i < genes.length; i++) {
+      if (visited.contains(genes[i])) {
+        fitness--;
+      } else {
+        if (!genes[i].getTeam1().getRestrictions().contains(Integer.valueOf(i))) {
+          fitness++;
+        }
+        if (!genes[i].getTeam2().getRestrictions().contains(Integer.valueOf(i))) {
+          fitness++;
+        }
+        if (i > 0 && genes[i - 1].getSport().equals(genes[i].getSport())) {
+          fitness++;
+        }
+        visited.add(genes[i]);
+      }
     }
     return fitness;
   }
@@ -75,18 +90,6 @@ public class Individual implements Comparable<Individual> {
       return -1;
     } else {
       return 0;
-    }
-  }
-
-  // Implementing Fisher–Yates shuffle
-  private void shuffleArray(int[] ar) {
-    Random rnd = ThreadLocalRandom.current();
-    for (int i = ar.length - 1; i > 0; i--) {
-      int index = rnd.nextInt(i + 1);
-      // Simple swap
-      int a = ar[index];
-      ar[index] = ar[i];
-      ar[i] = a;
     }
   }
 

@@ -1,5 +1,8 @@
 package genetic;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Team {
 
   private int id;
@@ -8,6 +11,8 @@ public class Team {
 
   private String name;
 
+  private List<Integer> restrictions;
+
   public Team() {
   }
 
@@ -15,6 +20,7 @@ public class Team {
     this.setId(id);
     this.setName(name);
     this.setSport(sport);
+    this.restrictions = new ArrayList<Integer>();
   }
 
   public int getId() {
@@ -39,5 +45,25 @@ public class Team {
 
   public void setName(String name) {
     this.name = name;
+  }
+
+  public List<Integer> getRestrictions() {
+    return restrictions;
+  }
+
+  public void setRestrictions(List<Integer> restrictions) {
+    this.restrictions = restrictions;
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (!(o instanceof Team)) {
+      return false;
+    }
+    Team other = (Team) o;
+    boolean result = other.name.equals(this.name);
+    result &= other.sport.equals(this.sport);
+    return result;
+
   }
 }

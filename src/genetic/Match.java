@@ -36,6 +36,18 @@ public class Match {
     return String.format("%s: %s x %s\n", sport.name(), team1.getName(), team2.getName());
   }
 
+  @Override
+  public boolean equals(Object o) {
+    if (!(o instanceof Match)) {
+      return false;
+    }
+    Match other = (Match) o;
+    boolean result = other.team1.equals(this.team1);
+    result &= other.team2.equals(this.team2);
+    result &= other.sport.equals(this.sport);
+    return result;
+  }
+
   public int getId() {
     return id;
   }

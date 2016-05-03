@@ -49,6 +49,27 @@ public class Population {
     return second;
   }
 
+  public double[] getStatistics() {
+    Individual best = individuals[0];
+    Individual worst = individuals[0];
+
+    double sum = 0;
+
+    // Loop through individuals to find fittest
+    for (int i = 0; i < size(); i++) {
+      int currentFitness = getIndividual(i).getFitness();
+      sum += currentFitness;
+      if (best.getFitness() <= currentFitness) {
+        best = getIndividual(i);
+      } else if (worst.getFitness() > currentFitness) {
+        worst = getIndividual(i);
+      }
+    }
+    double avg = sum / size();
+    double[] result = { best.getFitness(), worst.getFitness(), avg };
+    return result;
+  }
+
   /* Public methods */
   // Get population size
   public int size() {
