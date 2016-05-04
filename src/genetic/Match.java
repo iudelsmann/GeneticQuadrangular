@@ -1,34 +1,48 @@
 package genetic;
 
+/**
+ * Classe que representa uma partida.
+ */
 public class Match {
 
-  private int id;
-
+  /** Modalidade da partida. */
   private SportsEnum sport;
 
+  /** Time 1. */
   private Team team1;
 
+  /** Time 2. */
   private Team team2;
 
-  public Match() {
-  }
+  /**
+   * Instancia uma partida.
+   *
+   * @param team1
+   *          time 1
+   * @param team2
+   *          time 2
+   */
+  public Match(Team team1, Team team2) {
+    this.team1 = team1;
+    this.team2 = team2;
 
-  public Match(int id, Team team1, Team team2) {
-    this.setId(id);
-    this.setTeam1(team1);
-    this.setTeam2(team2);
+    // Se os times não forem da mesma modalide gera exceção
     if (!team1.getSport().equals(team2.getSport())) {
       throw new RuntimeException("Invalid match");
     }
-    this.setSport(team1.getSport());
+    this.sport = team1.getSport();
   }
 
   public SportsEnum getSport() {
     return sport;
   }
 
-  public void setSport(SportsEnum sport) {
-    this.sport = sport;
+  public Team getTeam1() {
+    return team1;
+  }
+
+  public Team getTeam2() {
+    return team2;
   }
 
   @Override
@@ -46,30 +60,6 @@ public class Match {
     result &= other.team2.equals(this.team2);
     result &= other.sport.equals(this.sport);
     return result;
-  }
-
-  public int getId() {
-    return id;
-  }
-
-  public void setId(int id) {
-    this.id = id;
-  }
-
-  public Team getTeam1() {
-    return team1;
-  }
-
-  public void setTeam1(Team team1) {
-    this.team1 = team1;
-  }
-
-  public Team getTeam2() {
-    return team2;
-  }
-
-  public void setTeam2(Team team2) {
-    this.team2 = team2;
   }
 
 }

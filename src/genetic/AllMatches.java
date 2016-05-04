@@ -2,29 +2,18 @@ package genetic;
 
 public class AllMatches {
 
-  private static Match[] matches;
+  private static Match[] matches = new Match[(Constants.NUMBER_OF_TEAMS / 2)
+      * SportsEnum.values().length];
 
-  private static Team[] teams;
+  private static Team[] teams = new Team[Constants.NUMBER_OF_TEAMS * SportsEnum.values().length];
 
   public static void initialize() {
 
-    teams = new Team[Constants.NUMBER_OF_TEAMS * SportsEnum.values().length];
-
-    SportsEnum[] sports = SportsEnum.values();
     int counter = 0;
-
-    for (SportsEnum sport : sports) {
-      for (int i = 0; i < Constants.NUMBER_OF_TEAMS; i++) {
-        teams[counter] = new Team(counter, sport.name() + i, sport);
-        counter++;
-      }
-    }
-
-    matches = new Match[(Constants.NUMBER_OF_TEAMS / 2) * SportsEnum.values().length];
 
     counter = 0;
     for (int i = 0; i < matches.length; i++) {
-      matches[i] = new Match(i, teams[counter], teams[counter + 1]);
+      matches[i] = new Match(teams[counter], teams[counter + 1]);
       counter += 2;
     }
   }
@@ -35,6 +24,10 @@ public class AllMatches {
 
   public static Team getTeam(int index) {
     return teams[index];
+  }
+
+  public static void setTeam(Team team, int index) {
+    teams[index] = team;
   }
 
   public static int totalMatches() {

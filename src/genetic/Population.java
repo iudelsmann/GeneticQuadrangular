@@ -1,33 +1,47 @@
 package genetic;
 
+/**
+ * Classe que representa uma populção. Um conjunto de indivíduos e métodos para
+ * opera-los.
+ */
 public class Population {
 
-  Individual[] individuals;
+  /** Indivíduos da população. */
+  private Individual[] individuals;
 
-  /*
-   * Constructors
+  /**
+   * Construtor que recebe o tamanho da população e se deve gerar os indivíduos
+   * ou não.
+   *
+   * @param populationSize
+   *          tamanho da população
+   * @param initialise
+   *          se deve gerar os indivíduos ou não
    */
-  // Create a population
   public Population(int populationSize, boolean initialise) {
+    // Instancia o vetor com o tamanho passado
     individuals = new Individual[populationSize];
-    // Initialise population
+
+    // Gera indivíduos aleatórios se necessário
     if (initialise) {
-      // Loop and create individuals
       for (int i = 0; i < size(); i++) {
-        Individual newIndividual = new Individual(AllMatches.totalMatches());
+        Individual newIndividual = new Individual(true);
         saveIndividual(i, newIndividual);
       }
     }
   }
 
-  /* Getters */
   public Individual getIndividual(int index) {
     return individuals[index];
   }
 
+  /**
+   * Retorna o indivíduo com maior aptidão.
+   *
+   * @return indivíduo com maior aptidão
+   */
   public Individual getFittest() {
     Individual fittest = individuals[0];
-    // Loop through individuals to find fittest
     for (int i = 0; i < size(); i++) {
       if (fittest.getFitness() <= getIndividual(i).getFitness()) {
         fittest = getIndividual(i);
@@ -36,26 +50,20 @@ public class Population {
     return fittest;
   }
 
-  public Individual getSecondFittest() {
-    Individual fittest = individuals[0];
-    Individual second = individuals[0];
-    // Loop through individuals to find fittest
-    for (int i = 0; i < size(); i++) {
-      if (fittest.getFitness() <= getIndividual(i).getFitness()) {
-        second = fittest;
-        fittest = getIndividual(i);
-      }
-    }
-    return second;
-  }
-
+  /**
+   * Método auxiliar para calcular estatísticas. Não é necessário par resolver o
+   * problema, porém retorna dados importantes para observar o comportamento da
+   * execução.
+   *
+   * @return um vetor com 3 dados. As aptidoẽs dos indivíduo mais e menos aptos,
+   *         e a média de toda a população.
+   */
   public double[] getStatistics() {
     Individual best = individuals[0];
     Individual worst = individuals[0];
 
     double sum = 0;
 
-    // Loop through individuals to find fittest
     for (int i = 0; i < size(); i++) {
       int currentFitness = getIndividual(i).getFitness();
       sum += currentFitness;
@@ -70,13 +78,10 @@ public class Population {
     return result;
   }
 
-  /* Public methods */
-  // Get population size
   public int size() {
     return individuals.length;
   }
 
-  // Save individual
   public void saveIndividual(int index, Individual indiv) {
     individuals[index] = indiv;
   }

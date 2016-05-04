@@ -1,39 +1,55 @@
 package genetic;
 
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.InputStreamReader;
+
 public class GA {
 
-  public static void main(String[] args) {
+  public static void main(String[] args) throws Exception {
+
+    // Se um arquivo foi passado como parâmetro ele é lido, caso contrário,
+    // lê-se da entrada padrão
+    if (args.length > 0) {
+      System.setIn(new FileInputStream(args[0]));
+    }
+
+    BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+
+    String input;
+    String params[];
+
+    // Itera sobre entrada criando os times que jogarão
+    for (int counter = 0; counter < Constants.NUMBER_OF_TEAMS
+        * SportsEnum.values().length; counter++) {
+      input = br.readLine();
+      params = input.split(" ");
+      Team team = new Team(params[0], SportsEnum.valueOf(params[1]));
+
+      // Adiciona as restrições
+      for (int i = 2; i < params.length; i++) {
+        team.addRestriction(Integer.valueOf(params[i]));
+      }
+      AllMatches.setTeam(team, counter);
+    }
 
     // Cria todos os jogos
     AllMatches.initialize();
 
-    int[] times = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+    // Cria população inicial
+    Population myPop = new Population(Constants.POPULATION_SIZE, true);
 
-    for (int i = 0; i < Constants.NUMBER_OF_TEAMS * SportsEnum.values().length; i++) {
-      int totalRestrictions = (int) (Math.random() * 10);
-      Helper.shuffleArray(times);
-      Team team = AllMatches.getTeam(i);
-      for (int j = 0; j < totalRestrictions; j++) {
-        team.getRestrictions().add(Integer.valueOf(times[j]));
-      }
-    }
-
-    // Create an initial population
-    Population myPop = new Population(50, true);
-
-    // Evolve our population until we reach an optimum solution
-    int generationCount = 0;
-    while (generationCount < Constants.MAX_GENERATIONS) {
-      generationCount++;
+    // Gera novas gerações ate a condição de parada imprimindo o melhor, o pior,
+    // e a média da função de fitness dessa geração
+    for (int generationCount = 1; generationCount <= Constants.MAX_GENERATIONS; generationCount++) {
       double[] values = myPop.getStatistics();
       System.out.println("Generation: " + generationCount + "-> Fittest: " + values[0]
-          + "/ Least fit: " + values[1] + "/ Average: " + values[2]);
+          + " / Least fit: " + values[1] + " / Average: " + values[2]);
       myPop = Algorithm.evolvePopulation(myPop);
     }
-    System.out.println("Solution found!");
-    System.out.println("Generation: " + generationCount);
+
+    // Imprime a melhor solução encontrada.
     System.out.println("Genes:");
     System.out.println(myPop.getFittest());
-
   }
 }

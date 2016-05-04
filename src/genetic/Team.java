@@ -3,32 +3,32 @@ package genetic;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Classe que representa um time.
+ */
 public class Team {
 
-  private int id;
-
+  /** Esporte que este time pratica. */
   private SportsEnum sport;
 
+  /** Nome do time. */
   private String name;
 
+  /** Restrições, horários que o time não pode jogar. */
   private List<Integer> restrictions;
 
-  public Team() {
-  }
-
-  public Team(int id, String name, SportsEnum sport) {
-    this.setId(id);
+  /**
+   * Instancia um time, com nome a modalidade passados como parãmetros.
+   *
+   * @param name
+   *          nome do time
+   * @param sport
+   *          esporte praticado
+   */
+  public Team(String name, SportsEnum sport) {
     this.setName(name);
     this.setSport(sport);
     this.restrictions = new ArrayList<Integer>();
-  }
-
-  public int getId() {
-    return id;
-  }
-
-  public void setId(int id) {
-    this.id = id;
   }
 
   public SportsEnum getSport() {
@@ -51,8 +51,8 @@ public class Team {
     return restrictions;
   }
 
-  public void setRestrictions(List<Integer> restrictions) {
-    this.restrictions = restrictions;
+  public void addRestriction(Integer restriction) {
+    this.restrictions.add(restriction);
   }
 
   @Override
@@ -64,6 +64,10 @@ public class Team {
     boolean result = other.name.equals(this.name);
     result &= other.sport.equals(this.sport);
     return result;
+  }
 
+  @Override
+  public String toString() {
+    return this.getName() + " " + this.getSport().name() + " " + this.getRestrictions().toString();
   }
 }
