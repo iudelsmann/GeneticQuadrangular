@@ -45,6 +45,10 @@ public class Match {
     return team2;
   }
 
+  public boolean teamPlaying(Team team) {
+    return this.team1.equals(team) || this.team2.equals(team);
+  }
+
   @Override
   public String toString() {
     return String.format("%s: %s x %s\n", sport.name(), team1.getName(), team2.getName());

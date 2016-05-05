@@ -4,15 +4,23 @@ public class Constants {
 
   static int NUMBER_OF_TEAMS = 4;
 
-  /* GA parameters */
-  static final double MUTATION_RATE = 0.1;
-  static final int TOURNAMENT_SIZE = 5;
-  static final boolean ELITISM = true;
-  static final int POPULATION_SIZE = 50;
+  /** Porcentagem de mutação. */
+  static final double MUTATION_RATE = 0.3;
 
-  static final String[] times = { "08:00", "09:30", "11:00", "12:30", "14:00", "15:30", "17:00",
-      "18:30", "20:00", "21:30" };
+  /** Tamanho dos torneios de seleção. */
+  static final int TOURNAMENT_SIZE = 10;
 
-  static final int MAX_GENERATIONS = 100;
+  /** Se deve ser usado elitismo ou não. */
+  static final boolean ELITISM = false;
+
+  /** Tamanho da popualção. */
+  static final int POPULATION_SIZE = 500;
+
+  /** Número máximo de gerações. */
+  static final int MAX_GENERATIONS = 500;
+
+  /** Vetor auxiliar para formatação da saída apenas. */
+  static final String[] times = { "08:00h: ", "09:30h: ", "11:00h: ", "12:30h: ", "14:00h: ",
+      "15:30h: ", "17:00h: ", "18:30h: ", "20:00h: ", "21:30h: " };
 
 }

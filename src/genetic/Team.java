@@ -15,7 +15,13 @@ public class Team {
   private String name;
 
   /** Restrições, horários que o time não pode jogar. */
-  private List<Integer> restrictions;
+  private List<Integer> dayOneRestrictions;
+
+  /** Restrições, horários que o time não pode jogar. */
+  private List<Integer> dayTwoRestrictions;
+
+  /** Restrições, horários que o time não pode jogar. */
+  private List<Integer> dayThreeRestrictions;
 
   /**
    * Instancia um time, com nome a modalidade passados como parãmetros.
@@ -28,7 +34,9 @@ public class Team {
   public Team(String name, SportsEnum sport) {
     this.setName(name);
     this.setSport(sport);
-    this.restrictions = new ArrayList<Integer>();
+    this.dayOneRestrictions = new ArrayList<Integer>();
+    this.dayTwoRestrictions = new ArrayList<Integer>();
+    this.dayThreeRestrictions = new ArrayList<Integer>();
   }
 
   public SportsEnum getSport() {
@@ -47,12 +55,50 @@ public class Team {
     this.name = name;
   }
 
-  public List<Integer> getRestrictions() {
-    return restrictions;
+  public List<Integer> getDayOneRestrictions() {
+    return dayOneRestrictions;
   }
 
-  public void addRestriction(Integer restriction) {
-    this.restrictions.add(restriction);
+  public List<Integer> getDayTwoRestrictions() {
+    return dayTwoRestrictions;
+  }
+
+  public List<Integer> getDayThreeRestrictions() {
+    return dayThreeRestrictions;
+  }
+
+  public List<Integer> getRestrictions(int day) {
+    List<Integer> result;
+    switch (day) {
+    case 1:
+      result = this.dayOneRestrictions;
+      break;
+    case 2:
+      result = this.dayTwoRestrictions;
+      break;
+    case 3:
+      result = this.dayThreeRestrictions;
+      break;
+    default:
+      throw new RuntimeException("Dia inválido");
+    }
+    return result;
+  }
+
+  public void addRestriction(Integer restriction, int day) {
+    switch (day) {
+    case 1:
+      this.dayOneRestrictions.add(restriction);
+      break;
+    case 2:
+      this.dayTwoRestrictions.add(restriction);
+      break;
+    case 3:
+      this.dayThreeRestrictions.add(restriction);
+      break;
+    default:
+      throw new RuntimeException("Dia inválido");
+    }
   }
 
   @Override
@@ -68,6 +114,7 @@ public class Team {
 
   @Override
   public String toString() {
-    return this.getName() + " " + this.getSport().name() + " " + this.getRestrictions().toString();
+    return this.getName() + " " + this.getSport().name() + " "
+        + this.getDayOneRestrictions().toString();
   }
 }

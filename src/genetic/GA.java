@@ -3,6 +3,8 @@ package genetic;
 import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class GA {
 
@@ -19,6 +21,9 @@ public class GA {
     String input;
     String params[];
 
+    // Regex para isolar restrições
+    Pattern p = Pattern.compile("\\[(.*?)\\]");
+
     // Itera sobre entrada criando os times que jogarão
     for (int counter = 0; counter < Constants.NUMBER_OF_TEAMS
         * SportsEnum.values().length; counter++) {
@@ -26,9 +31,15 @@ public class GA {
       params = input.split(" ");
       Team team = new Team(params[0], SportsEnum.valueOf(params[1]));
 
-      // Adiciona as restrições
-      for (int i = 2; i < params.length; i++) {
-        team.addRestriction(Integer.valueOf(params[i]));
+      // Adiciona as restrições de cada dia
+      Matcher m = p.matcher(input);
+      int day = 1;
+      while (m.find()) {
+        String[] restrictions = m.group(1).split(",[ ]*");
+        for (int i = 0; i < restrictions.length; i++) {
+          team.addRestriction(Integer.valueOf(restrictions[i]), day);
+        }
+        day++;
       }
       AllMatches.setTeam(team, counter);
     }
@@ -49,7 +60,7 @@ public class GA {
     }
 
     // Imprime a melhor solução encontrada.
-    System.out.println("Genes:");
+    System.out.println("\nGenes:");
     System.out.println(myPop.getFittest());
   }
 }

@@ -83,6 +83,12 @@ public class Individual {
    * <p>
    * - +1pt caso o jogo anterior seja do mesmo esporte
    * </p>
+   * <p>
+   * - -4pts caso o time 1 já tenha um jogo avaliado para este mesmo dia
+   * </p>
+   * <p>
+   * - -4pts caso o time 2 já tenha um jogo avaliado para este mesmo dia
+   * </p>
    *
    * @return o fitness deste indivíduo
    */
@@ -93,26 +99,46 @@ public class Individual {
       // Itera sobre os jogos verificando as restrições e o esporte anterior,
       // incrementando o fitness de acordo
       for (int i = 0; i < genes.length; i++) {
-        if (!genes[i].getTeam1().getRestrictions().contains(Integer.valueOf(i))) {
+        int day = (i / 10) + 1;
+        if (!genes[i].getTeam1().getRestrictions(day).contains(Integer.valueOf(i))) {
           fitness += 2;
         }
-        if (!genes[i].getTeam2().getRestrictions().contains(Integer.valueOf(i))) {
+        if (!genes[i].getTeam2().getRestrictions(day).contains(Integer.valueOf(i))) {
           fitness += 2;
         }
-        if (i > 0 && genes[i - 1].getSport().equals(genes[i].getSport())) {
+        if (i % 10 > 0 && genes[i - 1].getSport().equals(genes[i].getSport())) {
           fitness++;
+        }
+        // Se algum time já tem jogo avaliado para este dia
+        if (this.hasGameAtDay(genes[i].getTeam1(), day, i)) {
+          fitness -= 4;
+        }
+        if (this.hasGameAtDay(genes[i].getTeam2(), day, i)) {
+          fitness -= 4;
         }
       }
     }
     return fitness;
   }
 
+  public boolean hasGameAtDay(Team team, int day, int until) {
+    for (int i = (day - 1) * 10; i < until; i++) {
+      if (genes[i].teamPlaying(team)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
   @Override
   public String toString() {
     StringBuilder geneString = new StringBuilder();
-    for (int i = 0; i < size(); i++) {
-      geneString.append(Constants.times[i] + "h: ");
-      geneString.append(getGene(i));
+    for (int day = 1; day <= 3; day++) {
+      geneString.append("\nDia " + day + ":\n");
+      for (int i = 0; i < size() / 3; i++) {
+        geneString.append(Constants.times[i]);
+        geneString.append(getGene(i + 10 * (day - 1)));
+      }
     }
     return geneString.toString();
   }
