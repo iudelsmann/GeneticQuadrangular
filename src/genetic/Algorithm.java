@@ -73,7 +73,7 @@ public class Algorithm {
 
     // Copia o intervalo do primeiro indivíduo
     for (int i = startPos; i < endPos; i++) {
-      newIndiv.setGene(i, newIndiv.getGene(i));
+      newIndiv.setGene(i, indiv1.getGene(i));
     }
 
     int pos = 0;
