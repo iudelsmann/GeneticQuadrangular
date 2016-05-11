@@ -1,7 +1,5 @@
 package genetic;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
@@ -77,10 +75,12 @@ public class Algorithm {
       startPos = endPos;
       endPos = aux;
     }
-
-    result[0] = crossoverOX(indiv1, indiv2, startPos, endPos);
-    result[1] = crossoverOX(indiv2, indiv1, startPos, endPos);
-    // result = crossoverPMX(indiv1, indiv2, startPos, endPos);
+    if (CrossoverOptionsEnum.OX.equals(Constants.CROSSOVER_TYPE)) {
+      result[0] = crossoverOX(indiv1, indiv2, startPos, endPos);
+      result[1] = crossoverOX(indiv2, indiv1, startPos, endPos);
+    } else {
+      result = crossoverPMX(indiv1, indiv2, startPos, endPos);
+    }
     return result;
   }
 
@@ -137,34 +137,19 @@ public class Algorithm {
 
   private static Individual[] crossoverPMX(Individual indiv1, Individual indiv2, Integer startPos,
       Integer endPos) {
-    List<Match> indiv1Genes = new ArrayList<Match>(Arrays.asList(indiv1.getGenes()));
-    List<Match> indiv2Genes = new ArrayList<Match>(Arrays.asList(indiv2.getGenes()));
 
-    crossover(indiv1Genes, indiv2Genes, startPos, endPos);
-    Individual child1 = new Individual(false);
-    Match[] genes1 = new Match[indiv1.size()];
-    genes1 = indiv1Genes.toArray(genes1);
-    child1.setGenes(genes1);
-    Individual child2 = new Individual(false);
-    Match[] genes2 = new Match[indiv2.size()];
-    genes2 = indiv2Genes.toArray(genes2);
-    child2.setGenes(genes2);
-    Individual[] result = { child1, child2 };
-    return result;
-  }
-
-  private static void crossover(final List<Match> tour1, final List<Match> tour2, Integer startPos,
-      Integer endPos) {
+    Individual tour1 = new Individual(indiv1);
+    Individual tour2 = new Individual(indiv2);
 
     // get the size of the tours
     final int size = tour1.size();
 
     // crossover the section in between the start and end indices
-    Helper.swap(tour1, tour2, startPos, endPos);
+    Helper.swapArray(tour1.getGenes(), tour2.getGenes(), startPos, endPos);
 
     // get a view of the crossover over sections in each tour
-    final List<Match> swappedSectionInTour1 = tour1.subList(startPos, endPos);
-    final List<Match> swappedSectionInTour2 = tour2.subList(startPos, endPos);
+    final List<Match> swappedSectionInTour1 = tour1.getMatchesBetweenIndexes(startPos, endPos);
+    final List<Match> swappedSectionInTour2 = tour2.getMatchesBetweenIndexes(startPos, endPos);
 
     Match currentCity;
     int replacementCityIndex = 0;
@@ -174,7 +159,7 @@ public class Algorithm {
     for (int i = endPos % size; i >= endPos || i < startPos; i = (i + 1) % size) {
 
       // get the current city being examined in tour 1
-      currentCity = tour1.get(i);
+      currentCity = tour1.getGene(i);
 
       // if that city is repeated in the crossed over section
       if (swappedSectionInTour1.contains(currentCity)) {
@@ -198,11 +183,11 @@ public class Algorithm {
         }
 
         // replace the current city with the replacement city
-        tour1.set(i, replacementCity);
+        tour1.setGene(i, replacementCity);
       }
 
       // get the current city being examined in tour 2
-      currentCity = tour2.get(i);
+      currentCity = tour2.getGene(i);
 
       // if that city is repeated in the crossed over section
       if (swappedSectionInTour2.contains(currentCity)) {
@@ -224,10 +209,11 @@ public class Algorithm {
         }
 
         // replace the current city with the replacement city
-        tour2.set(i, replacementCity);
+        tour2.setGene(i, replacementCity);
       }
     }
-
+    Individual[] result = { tour1, tour2 };
+    return result;
   }
 
   /**

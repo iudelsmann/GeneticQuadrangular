@@ -1,6 +1,8 @@
 package genetic;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 /**
  * Classe que representa um indivíduo de uma população. Contem um vetor de jogos
@@ -199,5 +201,15 @@ public class Individual {
   public void setGenes(Match[] genes) {
     this.fitness = -1;
     this.genes = genes;
+  }
+
+  public List<Match> getMatchesBetweenIndexes(Integer startPos, Integer endPos) {
+    List<Match> result = new ArrayList<Match>();
+
+    for (int i = startPos; i < endPos; i++) {
+      result.add(this.genes[i]);
+    }
+
+    return result;
   }
 }

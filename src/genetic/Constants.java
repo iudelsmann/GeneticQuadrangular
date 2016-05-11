@@ -11,6 +11,8 @@ public class Constants {
   /** Taxa de crossover. */
   static final double CROSSOVER_RATE = 0.7;
 
+  static final CrossoverOptionsEnum CROSSOVER_TYPE = CrossoverOptionsEnum.PMX;
+
   /** Tamanho dos torneios de seleção. */
   static final int TOURNAMENT_SIZE = 5;
 
