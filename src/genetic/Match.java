@@ -45,6 +45,13 @@ public class Match {
     return team2;
   }
 
+  /**
+   * Verifica se o time passado como argumento esta nesta partida.
+   *
+   * @param team
+   *          o time buscado
+   * @return true, se o time argumento esta nesta partida
+   */
   public boolean teamPlaying(Team team) {
     return this.team1.equals(team) || this.team2.equals(team);
   }

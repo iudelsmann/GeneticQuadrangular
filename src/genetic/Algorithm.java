@@ -1,5 +1,8 @@
 package genetic;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -23,25 +26,68 @@ public class Algorithm {
     // Caso elitísmo esteja habilidade já salva o melhor indivíduo
     int elitismOffset = 0;
     if (Constants.ELITISM) {
-      newPopulation.saveIndividual(0, pop.getFittest());
-      elitismOffset = 1;
+      Individual[] elite = pop.getTwoFittest();
+      newPopulation.saveIndividual(0, elite[0]);
+      newPopulation.saveIndividual(1, elite[1]);
+      elitismOffset = 2;
     }
 
     // Reprodução via crossover e mutação para gerar novos indivíduos
-    for (int i = elitismOffset; i < pop.size(); i++) {
+    for (int i = elitismOffset; i < pop.size(); i += 2) {
       // Seleção via campeonato
       Individual indiv1 = tournamentSelection(pop);
       Individual indiv2 = tournamentSelection(pop);
-      Individual newIndiv = crossover(indiv1, indiv2);
-      newPopulation.saveIndividual(i, mutate(newIndiv));
+      Individual[] newIndivs = reproduce(indiv1, indiv2);
+      newPopulation.saveIndividual(i, mutate(newIndivs[0]));
+      newPopulation.saveIndividual(i + 1, mutate(newIndivs[1]));
     }
     return newPopulation;
   }
 
   /**
-   * Reprodução via crossover. Crossover diferente do tradicional, uma vez que
-   * não gera indivíduos inválidos.<br>
-   * <br>
+   * Reprodução. Recebe dois indivíduos e gera dois descendentes.
+   *
+   * @param indiv1
+   *          indivíduo 1
+   * @param indiv2
+   *          indivíduo 2
+   * @return o novo par de indivíduos gerados
+   */
+  private static Individual[] reproduce(Individual indiv1, Individual indiv2) {
+    Individual[] result = new Individual[2];
+
+    Random rnd = ThreadLocalRandom.current();
+
+    if (rnd.nextDouble() > Constants.CROSSOVER_RATE) {
+      result[0] = new Individual(indiv1);
+      result[1] = new Individual(indiv2);
+      return result;
+    }
+
+    Integer startPos = rnd.nextInt(indiv1.size());
+    Integer endPos = rnd.nextInt(indiv1.size());
+
+    while (startPos.equals(endPos)) {
+      endPos = rnd.nextInt(indiv1.size());
+    }
+
+    // Inverte os valores se necessário
+    if (startPos.compareTo(endPos) > 0) {
+      int aux = startPos;
+      startPos = endPos;
+      endPos = aux;
+    }
+
+    result[0] = crossoverOX(indiv1, indiv2, startPos, endPos);
+    result[1] = crossoverOX(indiv2, indiv1, startPos, endPos);
+    // result = crossoverPMX(indiv1, indiv2, startPos, endPos);
+    return result;
+  }
+
+  /**
+   * <p>
+   * Executa um ordered crossover e gera um indivíduo.
+   * </p>
    *
    * Este crossover funciona da seguinte forma:<br>
    * Escolhe-se dois pontos do primeiro indivíduo e copia-se os valores entre
@@ -54,22 +100,16 @@ public class Algorithm {
    *          indivíduo 1
    * @param indiv2
    *          indivíduo 2
-   * @return o novo indivíduo gerado
+   * @param startPos
+   *          posicao do primeiro corte
+   * @param endPos
+   *          posicao do segundo corte
+   * @return o novo indivíduo gerado pelo crossover
    */
-  private static Individual crossover(Individual indiv1, Individual indiv2) {
-    Random rnd = ThreadLocalRandom.current();
+  private static Individual crossoverOX(Individual indiv1, Individual indiv2, Integer startPos,
+      Integer endPos) {
 
     Individual newIndiv = new Individual(false);
-
-    int startPos = rnd.nextInt(indiv1.size());
-    int endPos = rnd.nextInt(indiv1.size());
-
-    // Inverte os valores se necessário
-    if (startPos > endPos) {
-      int aux = startPos;
-      startPos = endPos;
-      endPos = aux;
-    }
 
     // Copia o intervalo do primeiro indivíduo
     for (int i = startPos; i < endPos; i++) {
@@ -93,6 +133,101 @@ public class Algorithm {
       }
     }
     return newIndiv;
+  }
+
+  private static Individual[] crossoverPMX(Individual indiv1, Individual indiv2, Integer startPos,
+      Integer endPos) {
+    List<Match> indiv1Genes = new ArrayList<Match>(Arrays.asList(indiv1.getGenes()));
+    List<Match> indiv2Genes = new ArrayList<Match>(Arrays.asList(indiv2.getGenes()));
+
+    crossover(indiv1Genes, indiv2Genes, startPos, endPos);
+    Individual child1 = new Individual(false);
+    Match[] genes1 = new Match[indiv1.size()];
+    genes1 = indiv1Genes.toArray(genes1);
+    child1.setGenes(genes1);
+    Individual child2 = new Individual(false);
+    Match[] genes2 = new Match[indiv2.size()];
+    genes2 = indiv2Genes.toArray(genes2);
+    child2.setGenes(genes2);
+    Individual[] result = { child1, child2 };
+    return result;
+  }
+
+  private static void crossover(final List<Match> tour1, final List<Match> tour2, Integer startPos,
+      Integer endPos) {
+
+    // get the size of the tours
+    final int size = tour1.size();
+
+    // crossover the section in between the start and end indices
+    Helper.swap(tour1, tour2, startPos, endPos);
+
+    // get a view of the crossover over sections in each tour
+    final List<Match> swappedSectionInTour1 = tour1.subList(startPos, endPos);
+    final List<Match> swappedSectionInTour2 = tour2.subList(startPos, endPos);
+
+    Match currentCity;
+    int replacementCityIndex = 0;
+    Match replacementCity;
+
+    // iterate over each city in not in the crossed over section
+    for (int i = endPos % size; i >= endPos || i < startPos; i = (i + 1) % size) {
+
+      // get the current city being examined in tour 1
+      currentCity = tour1.get(i);
+
+      // if that city is repeated in the crossed over section
+      if (swappedSectionInTour1.contains(currentCity)) {
+
+        // get the index of the city to replace the repeated city (within the
+        // swapped section)
+        replacementCityIndex = swappedSectionInTour1.indexOf(currentCity);
+
+        // get the city that is intended to replace the repeated city
+        replacementCity = swappedSectionInTour2.get(replacementCityIndex);
+
+        // if the repeated city is also contained in the crossed over section
+        while (swappedSectionInTour1.contains(replacementCity)) {
+
+          // get the index of the city to replace the repeated city
+          replacementCityIndex = swappedSectionInTour1.indexOf(replacementCity);
+
+          // get the city that is intended to replace the repeated city
+          replacementCity = swappedSectionInTour2.get(replacementCityIndex);
+
+        }
+
+        // replace the current city with the replacement city
+        tour1.set(i, replacementCity);
+      }
+
+      // get the current city being examined in tour 2
+      currentCity = tour2.get(i);
+
+      // if that city is repeated in the crossed over section
+      if (swappedSectionInTour2.contains(currentCity)) {
+
+        // get the index of the city to replace the repeated city
+        replacementCityIndex = swappedSectionInTour2.indexOf(currentCity);
+
+        // get the city that is intended to replace the repeated city
+        replacementCity = swappedSectionInTour1.get(replacementCityIndex);
+
+        // if the repeated city is also contained in the crossed over section
+        while (swappedSectionInTour2.contains(replacementCity)) {
+
+          // get the index of the city to replace the repeated city
+          replacementCityIndex = swappedSectionInTour2.indexOf(replacementCity);
+
+          // get the city that is intended to replace the repeated city
+          replacementCity = swappedSectionInTour1.get(replacementCityIndex);
+        }
+
+        // replace the current city with the replacement city
+        tour2.set(i, replacementCity);
+      }
+    }
+
   }
 
   /**

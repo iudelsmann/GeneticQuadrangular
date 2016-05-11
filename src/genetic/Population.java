@@ -51,6 +51,24 @@ public class Population {
   }
 
   /**
+   * Busca os dois indivíduos como maior aptidão.
+   *
+   * @return os dois indivíduos com maior aptidão
+   */
+  public Individual[] getTwoFittest() {
+    Individual first = individuals[0];
+    Individual second = individuals[0];
+    for (int i = 0; i < size(); i++) {
+      if (first.getFitness() <= getIndividual(i).getFitness()) {
+        second = first;
+        first = getIndividual(i);
+      }
+    }
+    Individual[] result = { first, second };
+    return result;
+  }
+
+  /**
    * Método auxiliar para calcular estatísticas. Não é necessário par resolver o
    * problema, porém retorna dados importantes para observar o comportamento da
    * execução.
@@ -78,10 +96,23 @@ public class Population {
     return result;
   }
 
+  /**
+   * Retorna o tamanho da população.
+   *
+   * @return o tamanho da população.
+   */
   public int size() {
     return individuals.length;
   }
 
+  /**
+   * Salva um indivíduo na posição passada como parâmetro.
+   *
+   * @param index
+   *          o indice
+   * @param indiv
+   *          o indivíduo
+   */
   public void saveIndividual(int index, Individual indiv) {
     individuals[index] = indiv;
   }

@@ -14,13 +14,13 @@ public class Team {
   /** Nome do time. */
   private String name;
 
-  /** Restrições, horários que o time não pode jogar. */
+  /** Restrições, horários que o time não pode jogar no primeiro dia. */
   private List<Integer> dayOneRestrictions;
 
-  /** Restrições, horários que o time não pode jogar. */
+  /** Restrições, horários que o time não pode jogar no segundo dia. */
   private List<Integer> dayTwoRestrictions;
 
-  /** Restrições, horários que o time não pode jogar. */
+  /** Restrições, horários que o time não pode jogar no terceiro dia. */
   private List<Integer> dayThreeRestrictions;
 
   /**
@@ -55,18 +55,13 @@ public class Team {
     this.name = name;
   }
 
-  public List<Integer> getDayOneRestrictions() {
-    return dayOneRestrictions;
-  }
-
-  public List<Integer> getDayTwoRestrictions() {
-    return dayTwoRestrictions;
-  }
-
-  public List<Integer> getDayThreeRestrictions() {
-    return dayThreeRestrictions;
-  }
-
+  /**
+   * Busca as restrições desta equipe no dia passado como parâmetro.
+   *
+   * @param day
+   *          o dia
+   * @return as restrições do dia
+   */
   public List<Integer> getRestrictions(int day) {
     List<Integer> result;
     switch (day) {
@@ -85,6 +80,14 @@ public class Team {
     return result;
   }
 
+  /**
+   * Adiciona uma restrição no dia passado como parâmetro.
+   *
+   * @param restriction
+   *          a restrição
+   * @param day
+   *          o dia
+   */
   public void addRestriction(Integer restriction, int day) {
     switch (day) {
     case 1:
@@ -110,11 +113,5 @@ public class Team {
     boolean result = other.name.equals(this.name);
     result &= other.sport.equals(this.sport);
     return result;
-  }
-
-  @Override
-  public String toString() {
-    return this.getName() + " " + this.getSport().name() + " "
-        + this.getDayOneRestrictions().toString();
   }
 }

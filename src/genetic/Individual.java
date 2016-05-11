@@ -28,6 +28,18 @@ public class Individual {
   }
 
   /**
+   * Instancia um novo individuo clonando outro passado por parâmetro.
+   *
+   * @param original
+   *          o individuo a ser clonado
+   */
+  public Individual(Individual original) {
+    for (int i = 0; i < original.size(); i++) {
+      this.setGene(i, original.getGene(i));
+    }
+  }
+
+  /**
    * Cria um indivíduo VÁLIDO aleatoriamente.
    */
   public void generateIndividual() {
@@ -47,10 +59,25 @@ public class Individual {
     }
   }
 
+  /**
+   * Busca a partida no indica passado como parâmetro.
+   *
+   * @param index
+   *          o indice
+   * @return a partida no indice passado
+   */
   public Match getGene(int index) {
     return genes[index];
   }
 
+  /**
+   * Altera o gene no indice passado.
+   *
+   * @param index
+   *          o indice
+   * @param value
+   *          a nova partida a ser colocada no indice
+   */
   public void setGene(int index, Match value) {
     genes[index] = value;
 
@@ -58,14 +85,23 @@ public class Individual {
     fitness = -1;
   }
 
+  /**
+   * Tamanho do genoma deste indivíduo.
+   *
+   * @return o tamanho do genoma deste indivíduo.
+   */
   public int size() {
     return genes.length;
   }
 
-  public Match[] getGenes() {
-    return genes;
-  }
-
+  /**
+   * Verifica se este indivíduo já tem a partida passada como parâmetro em seu
+   * vetor.
+   *
+   * @param gene
+   *          a partida buscada
+   * @return true, se encontrar a partida no material genético
+   */
   public boolean containsGene(Match gene) {
     return Arrays.asList(genes).contains(gene);
   }
@@ -121,6 +157,19 @@ public class Individual {
     return fitness;
   }
 
+  /**
+   * Verifica se o time passado como parâmetro tem uma partida no dia passado
+   * como parâmetro. O parâmetro "until" é a posição no vetor aonde o busca deve
+   * parar, caso queiramos parar antes de completar o dia.
+   *
+   * @param team
+   *          o time que buscamos
+   * @param day
+   *          o dia em que buscamos
+   * @param until
+   *          ate que posição do vetor procurar (para limitar os horários)
+   * @return true, caso o time tenha uma partida no dia
+   */
   public boolean hasGameAtDay(Team team, int day, int until) {
     for (int i = (day - 1) * 10; i < until; i++) {
       if (genes[i].teamPlaying(team)) {
@@ -141,5 +190,14 @@ public class Individual {
       }
     }
     return geneString.toString();
+  }
+
+  public Match[] getGenes() {
+    return this.genes;
+  }
+
+  public void setGenes(Match[] genes) {
+    this.fitness = -1;
+    this.genes = genes;
   }
 }
