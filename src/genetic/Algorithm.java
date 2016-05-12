@@ -56,7 +56,7 @@ public class Algorithm {
 
     Random rnd = ThreadLocalRandom.current();
 
-    if (rnd.nextDouble() > Constants.CROSSOVER_RATE) {
+    if (rnd.nextDouble() >= Constants.CROSSOVER_RATE) {
       result[0] = new Individual(indiv1);
       result[1] = new Individual(indiv2);
       return result;
@@ -135,84 +135,77 @@ public class Algorithm {
     return newIndiv;
   }
 
+  /**
+   * <p>
+   * Executa um partially mapped crossover e gera dois indivíduos.
+   * </p>
+   *
+   * Este crossover funciona da seguinte forma:<br>
+   * Copia-se os indivíduos pais. Então escolhe-se dois pontos e troca-se os
+   * valores entre estes pontos entre os novos indvíduos. Feito isso valida-se
+   * estes novos indivíduos substituindo as entradas repetidas pelas
+   *
+   * Dessa forma um gene nunca aparecerá duas vezes e nenhum faltará, todos os
+   * jogos são cobertos e o indivíduo gerado é sempre válido.
+   *
+   * @param indiv1
+   *          the indiv1
+   * @param indiv2
+   *          the indiv2
+   * @param startPos
+   *          the start pos
+   * @param endPos
+   *          the end pos
+   * @return the individual[]
+   */
   private static Individual[] crossoverPMX(Individual indiv1, Individual indiv2, Integer startPos,
       Integer endPos) {
 
-    Individual tour1 = new Individual(indiv1);
-    Individual tour2 = new Individual(indiv2);
+    Individual child1 = new Individual(indiv1);
+    Individual child2 = new Individual(indiv2);
 
-    // get the size of the tours
-    final int size = tour1.size();
+    final int size = indiv1.size();
 
-    // crossover the section in between the start and end indices
-    Helper.swapArray(tour1.getGenes(), tour2.getGenes(), startPos, endPos);
+    // Troca os intervalos entre os pontos de crossover
+    Helper.swapArray(child1.getGenes(), child2.getGenes(), startPos, endPos);
 
     // get a view of the crossover over sections in each tour
-    final List<Match> swappedSectionInTour1 = tour1.getMatchesBetweenIndexes(startPos, endPos);
-    final List<Match> swappedSectionInTour2 = tour2.getMatchesBetweenIndexes(startPos, endPos);
+    final List<Match> swappedMatches1 = child1.getMatchesBetweenIndexes(startPos, endPos);
+    final List<Match> swappedMatches2 = child2.getMatchesBetweenIndexes(startPos, endPos);
 
-    Match currentCity;
-    int replacementCityIndex = 0;
-    Match replacementCity;
+    Match match;
 
-    // iterate over each city in not in the crossed over section
+    // Itera sobre todas as posições fora do intervalo validando a solução
+    // (substituindo partidas duplicadas pelas faltantes)
     for (int i = endPos % size; i >= endPos || i < startPos; i = (i + 1) % size) {
 
-      // get the current city being examined in tour 1
-      currentCity = tour1.getGene(i);
+      // Para a primeiro indivíduo
+      match = child1.getGene(i);
 
-      // if that city is repeated in the crossed over section
-      if (swappedSectionInTour1.contains(currentCity)) {
+      // Se a partida esta duplicada
+      if (swappedMatches1.contains(match)) {
 
-        // get the index of the city to replace the repeated city (within the
-        // swapped section)
-        replacementCityIndex = swappedSectionInTour1.indexOf(currentCity);
+        do {
+          // Busca a partida para substituir
+          match = swappedMatches2.get(swappedMatches1.indexOf(match));
+        } while (swappedMatches1.contains(match));
 
-        // get the city that is intended to replace the repeated city
-        replacementCity = swappedSectionInTour2.get(replacementCityIndex);
-
-        // if the repeated city is also contained in the crossed over section
-        while (swappedSectionInTour1.contains(replacementCity)) {
-
-          // get the index of the city to replace the repeated city
-          replacementCityIndex = swappedSectionInTour1.indexOf(replacementCity);
-
-          // get the city that is intended to replace the repeated city
-          replacementCity = swappedSectionInTour2.get(replacementCityIndex);
-
-        }
-
-        // replace the current city with the replacement city
-        tour1.setGene(i, replacementCity);
+        child1.setGene(i, match);
       }
 
-      // get the current city being examined in tour 2
-      currentCity = tour2.getGene(i);
+      // Faz o mesmo para o segundo indivíduo
+      match = child2.getGene(i);
 
-      // if that city is repeated in the crossed over section
-      if (swappedSectionInTour2.contains(currentCity)) {
+      if (swappedMatches2.contains(match)) {
 
-        // get the index of the city to replace the repeated city
-        replacementCityIndex = swappedSectionInTour2.indexOf(currentCity);
+        do {
+          match = swappedMatches1.get(swappedMatches2.indexOf(match));
+        } while (swappedMatches2.contains(match));
 
-        // get the city that is intended to replace the repeated city
-        replacementCity = swappedSectionInTour1.get(replacementCityIndex);
-
-        // if the repeated city is also contained in the crossed over section
-        while (swappedSectionInTour2.contains(replacementCity)) {
-
-          // get the index of the city to replace the repeated city
-          replacementCityIndex = swappedSectionInTour2.indexOf(replacementCity);
-
-          // get the city that is intended to replace the repeated city
-          replacementCity = swappedSectionInTour1.get(replacementCityIndex);
-        }
-
-        // replace the current city with the replacement city
-        tour2.setGene(i, replacementCity);
+        child2.setGene(i, match);
       }
     }
-    Individual[] result = { tour1, tour2 };
+    Individual[] result = { child1, child2 };
     return result;
   }
 

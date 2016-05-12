@@ -2,16 +2,16 @@ package genetic;
 
 public class Constants {
 
-  /** Número de times em cada modalidade. */
+  /** Número de times em cada modalidade. Não alterar por enquanto. */
   static int NUMBER_OF_TEAMS = 4;
 
   /** Porcentagem de mutação. */
   static final double MUTATION_RATE = 0.25;
 
   /** Taxa de crossover. */
-  static final double CROSSOVER_RATE = 0.7;
+  static final double CROSSOVER_RATE = 0.75;
 
-  static final CrossoverOptionsEnum CROSSOVER_TYPE = CrossoverOptionsEnum.PMX;
+  static final CrossoverOptionsEnum CROSSOVER_TYPE = CrossoverOptionsEnum.OX;
 
   /** Tamanho dos torneios de seleção. */
   static final int TOURNAMENT_SIZE = 5;
@@ -20,7 +20,7 @@ public class Constants {
   static final boolean ELITISM = true;
 
   /** Tamanho da popualção. */
-  static final int POPULATION_SIZE = 500;
+  static final int POPULATION_SIZE = 400;
 
   /** Número máximo de gerações. */
   static final int MAX_GENERATIONS = 200;
