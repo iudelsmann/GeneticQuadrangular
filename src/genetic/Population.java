@@ -36,14 +36,18 @@ public class Population {
   }
 
   /**
-   * Retorna o indivíduo com maior aptidão.
+   * Retorna o indivíduo com maior aptidão. O critério de desempate é o número
+   * de restrições violadas.
    *
    * @return indivíduo com maior aptidão
    */
   public Individual getFittest() {
     Individual fittest = individuals[0];
     for (int i = 0; i < size(); i++) {
-      if (fittest.getFitness() <= getIndividual(i).getFitness()) {
+      if (fittest.getFitness() < getIndividual(i).getFitness()) {
+        fittest = getIndividual(i);
+      } else if (fittest.getFitness() == getIndividual(i).getFitness()
+          && fittest.getViolated() > getIndividual(i).getFitness()) {
         fittest = getIndividual(i);
       }
     }
@@ -73,8 +77,9 @@ public class Population {
    * problema, porém retorna dados importantes para observar o comportamento da
    * execução.
    *
-   * @return um vetor com 3 dados. As aptidoẽs dos indivíduo mais e menos aptos,
-   *         e a média de toda a população.
+   * @return um vetor com 4 dados. As aptidoẽs dos indivíduo mais e menos aptos,
+   *         , a média de toda a população e o número de violações de restrições
+   *         do melhor indivíduo.
    */
   public double[] getStatistics() {
     Individual best = individuals[0];
@@ -92,7 +97,7 @@ public class Population {
       }
     }
     double avg = sum / size();
-    double[] result = { best.getFitness(), worst.getFitness(), avg };
+    double[] result = { best.getFitness(), worst.getFitness(), avg, best.getViolated() };
     return result;
   }
 

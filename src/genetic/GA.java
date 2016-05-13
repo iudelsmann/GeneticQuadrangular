@@ -2,6 +2,7 @@ package genetic;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -12,6 +13,8 @@ import java.util.regex.Pattern;
 public class GA {
 
   public static void main(String[] args) throws Exception {
+
+    readArguments();
 
     // Se um arquivo foi passado como parâmetro ele é lido, caso contrário,
     // lê-se da entrada padrão
@@ -57,13 +60,70 @@ public class GA {
     // e a média da função de fitness dessa geração
     for (int generationCount = 1; generationCount <= Constants.MAX_GENERATIONS; generationCount++) {
       double[] values = myPop.getStatistics();
-      System.out.println("Generation: " + generationCount + "-> Fittest: " + values[0]
-          + " / Least fit: " + values[1] + " / Average: " + values[2]);
+      System.out
+          .println("Generation: " + generationCount + "-> Fittest: " + values[0] + " / Least fit: "
+              + values[1] + " / Average: " + values[2] + " / Violations: " + values[3]);
       myPop = Algorithm.evolvePopulation(myPop);
     }
 
     // Imprime a melhor solução encontrada.
     System.out.println("\nGenes:");
     System.out.println(myPop.getFittest());
+  }
+
+  /**
+   * Le os argumentos para configurar a execução.
+   *
+   * @throws IOException
+   *           Em caso de erro na leitura.
+   */
+  private static void readArguments() throws IOException {
+    BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+
+    System.out.println(
+        "Configure os dados da execução. Obs: Caso aperte enter sem preencher o default será utilizado");
+
+    System.out.print("Tamanho da população (default 400): ");
+    String temp = br.readLine();
+
+    if (!temp.isEmpty())
+      Constants.POPULATION_SIZE = Integer.parseInt(temp);
+
+    System.out.print("Numero de gerações (default 200): ");
+    temp = br.readLine();
+
+    if (!temp.isEmpty())
+      Constants.MAX_GENERATIONS = Integer.parseInt(temp);
+
+    System.out.print("Tamanho dos torneios (default 5): ");
+    temp = br.readLine();
+
+    if (!temp.isEmpty())
+      Constants.TOURNAMENT_SIZE = Integer.parseInt(temp);
+
+    System.out.print("Taxa de crossover (default 0.75): ");
+    temp = br.readLine();
+
+    if (!temp.isEmpty())
+      Constants.CROSSOVER_RATE = Double.parseDouble(temp);
+
+    System.out.print("Taxa de mutação (default 0.25): ");
+    temp = br.readLine();
+
+    if (!temp.isEmpty())
+      Constants.MUTATION_RATE = Double.parseDouble(temp);
+
+    System.out.print("Elitism 'true' ou 'false'? (default true): ");
+    temp = br.readLine();
+
+    if (!temp.isEmpty())
+      Constants.ELITISM = Boolean.parseBoolean(temp);
+
+    System.out.print("Crossover 'OX' ou 'PMX'? (default OX): ");
+    temp = br.readLine();
+
+    if (!temp.isEmpty())
+      Constants.CROSSOVER_TYPE = CrossoverOptionsEnum.valueOf(temp.toUpperCase());
+
   }
 }

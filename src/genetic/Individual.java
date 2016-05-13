@@ -17,6 +17,9 @@ public class Individual {
   /** Para cache da fitness deste indivíduo. */
   private int fitness = -1;
 
+  /** Para cache do número de restrições violadas. */
+  private int violated = -1;
+
   /**
    * Construtor.
    *
@@ -211,5 +214,26 @@ public class Individual {
     }
 
     return result;
+  }
+
+  /**
+   * Retorna o número de restrições violadas por este indivíduo.
+   *
+   * @return o número de restrições violadas por este indivíduo.
+   */
+  public int getViolated() {
+    if (this.violated == -1) {
+      this.violated = 0;
+      for (int i = 0; i < genes.length; i++) {
+        int day = (i / 10) + 1;
+        if (genes[i].getTeam1().getRestrictions(day).contains(Integer.valueOf(i))) {
+          this.violated++;
+        }
+        if (genes[i].getTeam2().getRestrictions(day).contains(Integer.valueOf(i))) {
+          this.violated++;
+        }
+      }
+    }
+    return violated;
   }
 }
