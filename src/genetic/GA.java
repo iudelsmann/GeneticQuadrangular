@@ -81,7 +81,7 @@ public class GA {
     BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 
     System.out.println(
-        "Configure os dados da execução. Obs: Caso aperte enter sem preencher o default será utilizado");
+        "Configure os dados da execução. Obs: Caso aperte enter sem preencher o default será utilizado\n");
 
     System.out.print("Tamanho da população (default 400): ");
     String temp = br.readLine();
@@ -124,6 +124,8 @@ public class GA {
 
     if (!temp.isEmpty())
       Constants.CROSSOVER_TYPE = CrossoverOptionsEnum.valueOf(temp.toUpperCase());
+
+    System.out.println("");
 
   }
 }
